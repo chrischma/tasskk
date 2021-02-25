@@ -8,4 +8,5 @@ a text based terminal to-do-list written in python.
 * edit tasks from terminal
 
 ## Usage
-run <code>Main.py</code>. no need to install any modules or libraries.
+make sure you got <code>simple_term_menu</code> installed.
+run <code>Main.py</code>. 
