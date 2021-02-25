@@ -1,5 +1,5 @@
 # tasskk
-a text based to-do-list
+a text based terminal to-do-list written in python.
 
 ## Features
 
@@ -8,4 +8,4 @@ a text based to-do-list
 * edit tasks from terminal
 
 ## Usage
-Run <code>Main.py</code>. No need to install any modules or libraries.
+run <code>Main.py</code>. no need to install any modules or libraries.
