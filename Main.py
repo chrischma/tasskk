@@ -21,10 +21,9 @@ def check_if_task_file_exists():
 def create_new_task_from_input():
     description_input = input("What's your plan for this task? ")
 
-    status_choice = TerminalMenu(list_of_status).show()
-    status_input = list_of_status[status_choice]
 
-    new_task = task(description_input,status_input)
+
+    new_task = task(description_input,get_status_by_user_input())
 
     global task_file
     task_file = open('tasks.txt','a')
@@ -32,6 +31,11 @@ def create_new_task_from_input():
     task_file.close()
 
     main_menu()
+
+def get_status_by_user_input():
+    status_choice = TerminalMenu(list_of_status).show()
+    status_input = list_of_status[status_choice]
+    return status_input
 
 def create_task_from_list(description,status):
     global new_task
@@ -86,14 +90,62 @@ def show_tasks():
     os.system("clear")
     main_menu()
 
-def main_menu():
-    choice = TerminalMenu(['New Task','Show Tasks','Exit']).show()
+def save_task_list_to_file():
+    task_file = open('tasks.txt','w')
+    for _ in list_of_tasks:
+        task_file.writelines(f'{_.status} | {_.description} \n')
+    task_file.close()
 
-    if choice == 0:
+def edit_tasks():
+    load_tasks_from_file()
+    task_descriptions = list()
+
+    for _ in list_of_tasks:
+        task_descriptions.append(_.description.strip())
+
+    index_of_edited_task = TerminalMenu(task_descriptions).show()
+
+    edit_menu = TerminalMenu(['New Task','Change Description','Change Status','Delete Task']).show()
+
+    def delete_task():
+        list_of_tasks.pop(index_of_edited_task)
+        save_task_list_to_file()
+
+    def change_description():
+        user_input = input('Please enter your new description: \n')
+        list_of_tasks[index_of_edited_task].description = user_input
+        save_task_list_to_file()
+
+    def change_status():
+        list_of_tasks[index_of_edited_task].status = get_status_by_user_input()
+
+    if edit_menu == 0:
         create_new_task_from_input()
 
-    elif choice == 1:
+    elif edit_menu == 1:
+        change_description()
+
+    elif edit_menu == 2:
+        change_status()
+
+    elif edit_menu == 3:
+        delete_task()
+
+    save_task_list_to_file()
+    main_menu()
+
+
+
+def main_menu():
+    os.system('clear')
+    choice = TerminalMenu(['My Tasks','Edit Tasks','Exit']).show()
+
+    if choice == 0:
         show_tasks()
+
+
+    elif choice == 1:
+        edit_tasks()
 
     elif choice == 2:
         exit()
@@ -102,9 +154,4 @@ def main_menu():
 
 check_if_task_file_exists()
 main_menu()
-
-
-
-
-
 
