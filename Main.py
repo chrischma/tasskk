@@ -2,13 +2,43 @@ from simple_term_menu import TerminalMenu
 from colorama import Fore, Back, Style
 global task_file
 import os
+import time
 
-sts_done = "Done"
-sts_in_progress = "In Progress"
-sts_next = "Up Next"
+def load_status_list_from_file():
+    global status_file
 
-list_of_status = [sts_done,sts_in_progress,sts_next]
-list_of_tasks = list()
+    try:
+        status_file = open('status.txt', 'r')
+    except FileNotFoundError:
+        status_file = open('status.txt','w')
+        status_file.writelines('Done\nIn Progress\nUp Next')
+        status_file = open('status.txt', 'r')
+
+    global list_of_status
+    list_of_status = status_file.read().splitlines()
+
+    status_file.close()
+
+class status():
+    def __init__(self,name,color):
+        self.name = name
+        self.color = color
+
+def create_status():
+    name_input = input('Name for new status \n')
+    new_status = status(name_input,'Custom Color')
+    load_status_list_from_file()
+    list_of_status.append(str(new_status.name+' | '+new_status.color))
+
+    status_file = open('status.txt','w')
+
+    for _ in list_of_status:
+        status_file.writelines(_)
+        status_file.writelines('\n')
+
+    status_file.close()
+
+    load_status_list_from_file()
 
 def check_if_task_file_exists():
     try:
@@ -20,9 +50,6 @@ def check_if_task_file_exists():
 
 def create_new_task_from_input():
     description_input = input("What's your plan for this task? ")
-
-
-
     new_task = task(description_input,get_status_by_user_input())
 
     global task_file
@@ -33,6 +60,8 @@ def create_new_task_from_input():
     main_menu()
 
 def get_status_by_user_input():
+    os.system('clear')
+    print('Please set a status for your task: ')
     status_choice = TerminalMenu(list_of_status).show()
     status_input = list_of_status[status_choice]
     return status_input
@@ -70,15 +99,17 @@ def show_tasks():
     os.system('clear')
     load_tasks_from_file()
 
+    print('Your tasks: ')
+
     for _ in list_of_tasks:
 
-        if _.status == sts_done:
+        if _.status == 'Done':
             color = Back.GREEN
 
-        elif _.status == sts_next:
+        elif _.status == 'In Progress':
             color = Back.MAGENTA
 
-        elif _.status == sts_in_progress:
+        elif _.status == 'Up Next':
             color = Back.YELLOW
 
         else:
@@ -97,6 +128,7 @@ def save_task_list_to_file():
     task_file.close()
 
 def edit_tasks():
+
     load_tasks_from_file()
     task_descriptions = list()
 
@@ -108,6 +140,8 @@ def edit_tasks():
     edit_menu = TerminalMenu(['New Task','Change Description','Change Status','Delete Task']).show()
 
     def delete_task():
+        print('Task deleted.')
+        time.sleep(1)
         list_of_tasks.pop(index_of_edited_task)
         save_task_list_to_file()
 
@@ -132,26 +166,32 @@ def edit_tasks():
         delete_task()
 
     save_task_list_to_file()
+    show_tasks()
     main_menu()
-
-
 
 def main_menu():
     os.system('clear')
-    choice = TerminalMenu(['My Tasks','Edit Tasks','Exit']).show()
+    choice = TerminalMenu(['My Tasks','New Task','Edit Tasks','Edit Status','Exit']).show()
 
     if choice == 0:
         show_tasks()
 
-
     elif choice == 1:
-        edit_tasks()
+        create_new_task_from_input()
 
     elif choice == 2:
+        edit_tasks()
+
+    elif choice == 3:
+        os.system('open status.txt')
+
+    elif choice == 4:
         exit()
 
     return choice
 
 check_if_task_file_exists()
+load_status_list_from_file()
+show_tasks()
 main_menu()
 
