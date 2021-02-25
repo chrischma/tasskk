@@ -8,4 +8,4 @@ a text based to-do-list
 * edit tasks from terminal
 
 ## Usage
-Run <code> Main.py </code>. No need to install any modules or libraries.
+Run <code>Main.py</code>. No need to install any modules or libraries.
